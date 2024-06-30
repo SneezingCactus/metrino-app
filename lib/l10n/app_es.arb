@@ -1,0 +1,35 @@
+{
+  "@@locale": "es",
+
+  "helloWorld": "¡Hola Mundo!",
+
+  "okDialogButton": "Aceptar",
+  "cancelDialogButton": "Cancelar",
+
+  "unitKilometers": "Kilómetros",
+  "unitMeters": "Metros",
+  "unitCentimeters": "Centímetros",
+  "unitMiles": "Millas",
+  "unitYards": "Yardas",
+  "unitFeet": "Pies",
+  "unitInches": "Pulgadas",
+  "unitUnknown": "Unidad desconocida",
+
+  "resetMeasurement": "Reiniciar medición",
+  "saveMeasurement": "Guardar medición",
+  "changeMeasurementUnit": "Cambiar unidad de medición",
+  "seeSavedMeasurements": "Ver mediciones guardadas",
+
+  "settings": "Configuración",
+  "leftHandedMode": "Modo zurdo",
+  "leftHandedModeDescription": "Cambia de lugar los botones para ser alcanzados fácilmente cuando se utiliza el instrumento con la mano izquierda",
+
+  "deviceManagementPage": "Configurar dispositivo",
+  "chooseDevicePage": "Elegir dispositivo",
+  "deviceName": "Nombre",
+  "deviceAddress": "Dirección MAC Bluetooth",
+  "deviceBattery": "Batería",
+  "deviceWheelDiameter": "Diámetro de la rueda",
+
+  "deviceNotHereTip": "No puedes ver a tu dispositivo en la lista? Asegúrate de que te hayas conectado al mismo mediante la configuración de Bluetooth de tu teléfono (haz clic aquí para abrir)."
+}

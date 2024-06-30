@@ -1,0 +1,68 @@
+{
+  "@@locale": "en",
+
+  "helloWorld": "Hello World!",
+  "@helloWorld": {
+    "description": "The conventional newborn programmer greeting"
+  },
+
+  "okDialogButton": "OK",
+  "@okDialogButton": {
+    "description": "Label for 'OK' dialog buttons"
+  },
+  "cancelDialogButton": "Cancel",
+  "@cancelDialogButton": {
+    "description": "Label for 'Cancel' dialog buttons"
+  },
+
+  "unitKilometers": "Kilometers",
+  "@unitKilometers": {
+    "description": "Plural full name for the Kilometer (km) length measurement unit"
+  },
+  "unitMeters": "Meters",
+  "@unitMeters": {
+    "description": "Plural full name for the Meter (m) length measurement unit"
+  },
+  "unitCentimeters": "Centimeters",
+  "@unitCentimeters": {
+    "description": "Plural full name for the Centimeter (cm) length measurement unit"
+  },
+  "unitMiles": "Miles",
+  "@unitMiles": {
+    "description": "Plural full name for the Mile (mi) length measurement unit"
+  },
+  "unitYards": "Yards",
+  "@unitYards": {
+    "description": "Plural full name for the Yard (yd) length measurement unit"
+  },
+  "unitFeet": "Feet",
+  "@unitFeet": {
+    "description": "Plural full name for the Foot (ft) length measurement unit"
+  },
+  "unitInches": "Inches",
+  "@unitInches": {
+    "description": "Plural full name for the Inch (in) length measurement unit"
+  },
+  "unitUnknown": "Unknown unit",
+  "@unitUnknown": {
+    "description": "Fallback full name for unknown measurement units"
+  },
+
+  "resetMeasurement": "Reset measurement",
+  "saveMeasurement": "Save measurement",
+  "changeMeasurementUnit": "Change measurement unit",
+  "seeSavedMeasurements": "See saved measurements",
+
+  "settings": "Settings",
+  "leftHandedMode": "Left-handed mode",
+  "leftHandedModeDescription": "Switches the position of the buttons to be easily reached when holding the instrument with the left hand",
+
+  "deviceManagementPage": "Manage device",
+  "chooseDevicePage": "Choose device",
+  "deviceName": "Name",
+  "deviceAddress": "Bluetooth MAC address",
+  "deviceBattery": "Battery",
+  "deviceWheelDiameter": "Wheel diameter",
+
+  "deviceNotHereTip": "Can't see your device here? Make sure you've paired it through your Bluetooth settings (click here to open)."
+}
