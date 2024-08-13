@@ -1,9 +1,9 @@
 {
   "@@locale": "en",
 
-  "helloWorld": "Hello World!",
-  "@helloWorld": {
-    "description": "The conventional newborn programmer greeting"
+  "placeholder": "!!!L10N PLACEHOLDER!!!",
+  "@placeholder": {
+    "description": "Placeholder string for not yet locationalized stuff"
   },
 
   "okDialogButton": "OK",
@@ -52,6 +52,8 @@
   "saveMeasurement": "Save measurement",
   "changeMeasurementUnit": "Change measurement unit",
   "seeSavedMeasurements": "See saved measurements",
+
+  "savedMeasurementsPage": "Saved measurements",
 
   "settings": "Settings",
   "leftHandedMode": "Left-handed mode",

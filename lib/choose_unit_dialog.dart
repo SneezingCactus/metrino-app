@@ -14,7 +14,7 @@ class ChooseUnitDialog extends StatefulWidget {
 }
 
 class _ChooseUnitDialogState extends State<ChooseUnitDialog> {
-  MeasurementUnit chosenOption = MeasurementUnit.all[0];
+  MeasurementUnit chosenOption = MeasurementUnit.all.values.first;
 
   @override
   void initState() {
@@ -29,7 +29,7 @@ class _ChooseUnitDialogState extends State<ChooseUnitDialog> {
 
     // chosenOption = widget.initialValue;
 
-    for (MeasurementUnit unit in MeasurementUnit.all) {
+    for (MeasurementUnit unit in MeasurementUnit.all.values) {
       unitList.add(RadioListTile<MeasurementUnit>(
         title: Text(
             '${MeasurementUnit.getUnitFullName(context, unit)} (${unit.symbol})'),
@@ -43,7 +43,11 @@ class _ChooseUnitDialogState extends State<ChooseUnitDialog> {
       ));
     }
 
-    return AlertDialog(
+    return SimpleDialog(
+        title: Text(AppLocalizations.of(context)!.changeMeasurementUnit),
+        children: unitList);
+
+    /*return AlertDialog(
       title: Text(AppLocalizations.of(context)!.changeMeasurementUnit),
       content: SingleChildScrollView(
         child: Column(children: unitList),
@@ -63,6 +67,6 @@ class _ChooseUnitDialogState extends State<ChooseUnitDialog> {
           },
         )
       ],
-    );
+    );*/
   }
 }

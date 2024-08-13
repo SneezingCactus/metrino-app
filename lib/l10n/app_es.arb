@@ -20,6 +20,8 @@
   "changeMeasurementUnit": "Cambiar unidad de medición",
   "seeSavedMeasurements": "Ver mediciones guardadas",
 
+  "savedMeasurementsPage": "Mediciones guardadas",
+
   "settings": "Configuración",
   "leftHandedMode": "Modo zurdo",
   "leftHandedModeDescription": "Cambia de lugar los botones para ser alcanzados fácilmente cuando se utiliza el instrumento con la mano izquierda",

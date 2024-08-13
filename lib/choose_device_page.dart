@@ -1,11 +1,7 @@
-import 'dart:convert';
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:metrinoapp/device_comm_manager.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class ChooseDevicePage extends StatefulWidget {
   const ChooseDevicePage({super.key, required this.onDeviceChosen});
@@ -54,11 +50,12 @@ class _ChooseDevicePageState extends State<ChooseDevicePage> {
 
     // Start scanning w/ timeout
     // Optional: use `stopScan()` as an alternative to timeout
-    /*
-    await FlutterBluePlus.startScan(withServices: [
-      Guid(DeviceCommManager.configurationServiceUuid]);
+
+    await FlutterBluePlus.startScan(
+        withServices: [Guid(DeviceCommManager.configurationServiceUuid)],
+        timeout: const Duration(seconds: 15));
     // wait for scanning to stop
-    await FlutterBluePlus.isScanning.where((val) => val == false).first;*/
+    await FlutterBluePlus.isScanning.where((val) => val == false).first;
   }
 
   @override

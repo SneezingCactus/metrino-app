@@ -2,12 +2,13 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:metrinoapp/choose_unit_dialog.dart';
-import 'package:metrinoapp/choose_device_page.dart';
 import 'package:metrinoapp/device_comm_manager.dart';
 import 'package:metrinoapp/device_management_page.dart';
 import 'package:metrinoapp/measurement_units.dart';
 import 'package:metrinoapp/odometer_device_info.dart';
+import 'package:metrinoapp/saved_measurements_page.dart';
 import 'package:metrinoapp/settings_page.dart';
+import 'package:metrinoapp/storage_manager.dart';
 import 'package:metrinoapp/wheel_widget.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -31,15 +32,16 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-  MeasurementUnit _currentUnit = MeasurementUnit.all[0];
+  MeasurementUnit _currentUnit = MeasurementUnit.all.values.first;
   double _currentMeasurement = 0;
 
   @override
   void initState() {
     super.initState();
 
-    DeviceCommManager.instance.init();
+    StorageManager.instance.init();
 
+    DeviceCommManager.instance.init();
     DeviceCommManager.instance.turnListeners.add((TurnDirection direction) {
       setState(() {
         OdometerDeviceInfo deviceInfo =
@@ -62,10 +64,38 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  void _incrementMeasurement() {
-    setState(() {
-      _currentMeasurement++;
-    });
+  void _saveMeasurement() {
+    TextEditingController controller = TextEditingController();
+
+    showDialog(
+        context: context,
+        builder: ((BuildContext context) => AlertDialog(
+              title: Text(AppLocalizations.of(context)!.placeholder),
+              content: TextField(
+                controller: controller,
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)!.placeholder,
+                ),
+              ),
+              actions: [
+                TextButton(
+                  child: Text(AppLocalizations.of(context)!.cancelDialogButton),
+                  onPressed: () {
+                    Navigator.pop(context, 'Cancel');
+                  },
+                ),
+                TextButton(
+                  child: Text(AppLocalizations.of(context)!.okDialogButton),
+                  onPressed: () {
+                    Navigator.pop(context, 'OK');
+                    StorageManager.instance.saveMeasurement(
+                        _currentMeasurement, _currentUnit, controller.text);
+                    ScaffoldMessenger.of(context)
+                        .showSnackBar(SnackBar(content: Text('Fuck')));
+                  },
+                )
+              ],
+            )));
   }
 
   void _goToDeviceManagementPage() {
@@ -82,6 +112,13 @@ class _HomePageState extends State<HomePage> {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const SettingsPage()),
+    );
+  }
+
+  void _goToSavedMeasurementsPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const SavedMeasurementsPage()),
     );
   }
 
@@ -134,10 +171,10 @@ class _HomePageState extends State<HomePage> {
                     ),
                     FloatingActionButton(
                       heroTag: 'saveMeasurementButton',
-                      onPressed: _incrementMeasurement,
+                      onPressed: _saveMeasurement,
                       tooltip: AppLocalizations.of(context)!.saveMeasurement,
                       elevation: 1,
-                      child: const Icon(Icons.edit),
+                      child: const Icon(Icons.bookmark_add_outlined),
                     ),
                     FloatingActionButton(
                       heroTag: 'changeUnitButton',
@@ -157,7 +194,7 @@ class _HomePageState extends State<HomePage> {
                   progress: _currentMeasurement * 360,
                 ),
                 child: InkWell(
-                  onTap: _incrementMeasurement,
+                  onTap: _goToSavedMeasurementsPage,
                   customBorder: const CircleBorder(),
                   child: Container(
                       padding: const EdgeInsets.all(25),
@@ -169,7 +206,8 @@ class _HomePageState extends State<HomePage> {
                           FittedBox(
                               fit: BoxFit.scaleDown,
                               child: Text(
-                                '${(_currentMeasurement / _currentUnit.meterRatio).toStringAsFixed(2)}${_currentUnit.symbol}',
+                                MeasurementUnit.stringifyMeasurement(
+                                    _currentMeasurement, _currentUnit),
                                 style: theme.textTheme.displayLarge,
                               )),
                           Row(
