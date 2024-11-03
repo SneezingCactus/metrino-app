@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:metrinoapp/device_comm_manager.dart';
+import 'package:metrinoapp/managers/device_comm_manager.dart';
 
 class ChooseDevicePage extends StatefulWidget {
   const ChooseDevicePage({super.key, required this.onDeviceChosen});
@@ -72,7 +72,7 @@ class _ChooseDevicePageState extends State<ChooseDevicePage> {
               const Padding(
                   padding: EdgeInsets.all(20),
                   child: Icon(Icons.lightbulb_outline)),
-              Flexible(
+              Expanded(
                   child: Padding(
                       padding:
                           const EdgeInsets.only(top: 20, bottom: 20, right: 20),

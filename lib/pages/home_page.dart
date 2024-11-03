@@ -1,30 +1,20 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:metrinoapp/choose_unit_dialog.dart';
-import 'package:metrinoapp/device_comm_manager.dart';
-import 'package:metrinoapp/device_management_page.dart';
-import 'package:metrinoapp/measurement_units.dart';
-import 'package:metrinoapp/odometer_device_info.dart';
-import 'package:metrinoapp/saved_measurements_page.dart';
-import 'package:metrinoapp/settings_page.dart';
-import 'package:metrinoapp/storage_manager.dart';
-import 'package:metrinoapp/wheel_widget.dart';
+import 'package:flutter/services.dart';
+import 'package:metrinoapp/pages/choose_unit_dialog.dart';
+import 'package:metrinoapp/managers/device_comm_manager.dart';
+import 'package:metrinoapp/pages/device_management_page.dart';
+import 'package:metrinoapp/misc/measurement_units.dart';
+import 'package:metrinoapp/misc/odometer_device_info.dart';
+import 'package:metrinoapp/pages/saved_measurements_page.dart';
+import 'package:metrinoapp/pages/settings_page.dart';
+import 'package:metrinoapp/managers/storage_manager.dart';
+import 'package:metrinoapp/misc/wheel_widget.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -56,6 +46,8 @@ class _HomePageState extends State<HomePage> {
         }
       });
     });
+
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
   }
 
   void _resetMeasurement() {
@@ -65,37 +57,18 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _saveMeasurement() {
-    TextEditingController controller = TextEditingController();
-
-    showDialog(
-        context: context,
-        builder: ((BuildContext context) => AlertDialog(
-              title: Text(AppLocalizations.of(context)!.placeholder),
-              content: TextField(
-                controller: controller,
-                decoration: InputDecoration(
-                  labelText: AppLocalizations.of(context)!.placeholder,
-                ),
-              ),
-              actions: [
-                TextButton(
-                  child: Text(AppLocalizations.of(context)!.cancelDialogButton),
-                  onPressed: () {
-                    Navigator.pop(context, 'Cancel');
-                  },
-                ),
-                TextButton(
-                  child: Text(AppLocalizations.of(context)!.okDialogButton),
-                  onPressed: () {
-                    Navigator.pop(context, 'OK');
-                    StorageManager.instance.saveMeasurement(
-                        _currentMeasurement, _currentUnit, controller.text);
-                    ScaffoldMessenger.of(context)
-                        .showSnackBar(SnackBar(content: Text('Fuck')));
-                  },
-                )
-              ],
-            )));
+    StorageManager.instance.saveMeasurement(_currentMeasurement, _currentUnit);
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(AppLocalizations.of(context)!.measurementSaved),
+      dismissDirection: DismissDirection.horizontal,
+      behavior: SnackBarBehavior.floating,
+      duration: const Duration(milliseconds: 1500),
+      width: 280.0, // Width of the SnackBar.
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+    ));
   }
 
   void _goToDeviceManagementPage() {
@@ -139,12 +112,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     ThemeData theme = Theme.of(context);
 
     return Scaffold(
@@ -155,8 +122,6 @@ class _HomePageState extends State<HomePage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Container(
-              //mainAxisAlignment: MainAxisAlignment.center,
-              //margin: const EdgeInsets.all(100),
               padding: const EdgeInsets.all(40),
               child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -222,9 +187,7 @@ class _HomePageState extends State<HomePage> {
                       )),
                 )),
             Container(
-              //mainAxisAlignment: MainAxisAlignment.center,
-              //margin: const EdgeInsets.all(100),
-              padding: const EdgeInsets.all(40),
+              padding: const EdgeInsets.all(30),
               child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.end,
@@ -233,11 +196,13 @@ class _HomePageState extends State<HomePage> {
                       onPressed: _goToDeviceManagementPage,
                       tooltip: 'Increment',
                       icon: const Icon(Icons.bluetooth),
+                      padding: const EdgeInsets.all(20.0),
                     ),
                     IconButton(
                       onPressed: _goToSettingsPage,
                       tooltip: 'Increment',
                       icon: const Icon(Icons.settings),
+                      padding: const EdgeInsets.all(20.0),
                     ),
                   ]),
             ),

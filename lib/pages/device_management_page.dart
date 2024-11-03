@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-import 'package:metrinoapp/choose_device_page.dart';
-import 'package:metrinoapp/odometer_device_info.dart';
+import 'package:metrinoapp/pages/choose_device_page.dart';
+import 'package:metrinoapp/misc/odometer_device_info.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class DeviceManagementPage extends StatefulWidget {
@@ -28,7 +29,7 @@ class _DeviceManagementPageState extends State<DeviceManagementPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Manage device"),
+        title: Text(AppLocalizations.of(context)!.deviceManagementPage),
       ),
       body: ListView(
         children: [

@@ -1,7 +1,7 @@
 {
   "@@locale": "es",
 
-  "helloWorld": "¡Hola Mundo!",
+  "placeholder": "!!!L10N PLACEHOLDER!!!",
 
   "okDialogButton": "Aceptar",
   "cancelDialogButton": "Cancelar",
@@ -19,8 +19,13 @@
   "saveMeasurement": "Guardar medición",
   "changeMeasurementUnit": "Cambiar unidad de medición",
   "seeSavedMeasurements": "Ver mediciones guardadas",
+  "measurementSaved": "Medición guardada con éxito",
 
   "savedMeasurementsPage": "Mediciones guardadas",
+  "savedMeasurementOn": "Guardada el {date}, {time}",
+  "measurementCopiedToClipboard": "Medición copiada al portapapeles",
+
+  "countSelected": "{count, plural, =1{1 seleccionada} other{{count} seleccionadas}}",
 
   "settings": "Configuración",
   "leftHandedMode": "Modo zurdo",

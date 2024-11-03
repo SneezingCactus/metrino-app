@@ -51,9 +51,34 @@
   "resetMeasurement": "Reset measurement",
   "saveMeasurement": "Save measurement",
   "changeMeasurementUnit": "Change measurement unit",
-  "seeSavedMeasurements": "See saved measurements",
+  "seeSavedMeasurements": "Show saved measurements",
+  "measurementSaved": "Measurement saved successfully",
 
   "savedMeasurementsPage": "Saved measurements",
+  "savedMeasurementOn": "Saved on {date}, {time}",
+  "@savedMeasurementOn": {
+    "placeholders": {
+      "date": {
+        "type": "DateTime",
+        "format": "yMd"
+      },
+      "time": {
+        "type": "DateTime",
+        "format": "Hm"
+      }
+    }
+  },
+  "measurementCopiedToClipboard": "Measurement copied to clipboard",
+
+  "countSelected": "{count} selected",
+  "@countSelected": {
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "format": "compact"
+      }
+    }
+  },
 
   "settings": "Settings",
   "leftHandedMode": "Left-handed mode",
@@ -66,5 +91,5 @@
   "deviceBattery": "Battery",
   "deviceWheelDiameter": "Wheel diameter",
 
-  "deviceNotHereTip": "Can't see your device here? Make sure you've paired it through your Bluetooth settings (click here to open)."
+  "deviceNotHereTip": "Can't see your device here? Make sure you've paired it through your Bluetoofshjuoghuirfsonghuisfdhngth settings (click here to open)."
 }

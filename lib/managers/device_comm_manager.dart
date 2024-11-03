@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-import 'package:metrinoapp/odometer_device_info.dart';
+import 'package:metrinoapp/misc/odometer_device_info.dart';
 
 enum TurnDirection {
   left,
