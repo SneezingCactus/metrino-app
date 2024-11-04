@@ -48,6 +48,8 @@
     "description": "Fallback full name for unknown measurement units"
   },
 
+  "pleaseConnect": "Please connect to a device using the button below.",
+
   "resetMeasurement": "Reset measurement",
   "saveMeasurement": "Save measurement",
   "changeMeasurementUnit": "Change measurement unit",
@@ -82,14 +84,22 @@
 
   "settings": "Settings",
   "leftHandedMode": "Left-handed mode",
-  "leftHandedModeDescription": "Switches the position of the buttons to be easily reached when holding the instrument with the left hand",
+  "leftHandedModeDescription": "Swaps the buttons to be easily reached when holding the device with the left hand",
 
   "deviceManagementPage": "Manage device",
-  "chooseDevicePage": "Choose device",
+  "chooseDevicePage": "Choose a device",
+  "chooseDifferentDevice": "Choose a different device",
+  "connecting": "Connecting...",
+  "connected": "Connected",
+  "disconnected": "Disconnected",
+  "connectedTo": "Connected to",
   "deviceName": "Name",
-  "deviceAddress": "Bluetooth MAC address",
+  "deviceAddress": "MAC address",
   "deviceBattery": "Battery",
   "deviceWheelDiameter": "Wheel diameter",
+  "deviceWheelSlots": "Wheel slots",
+  "modifyDeviceParameters": "Modify device parameters",
+  "advancedUsersOnly": "Advanced users only",
 
-  "deviceNotHereTip": "Can't see your device here? Make sure you've paired it through your Bluetoofshjuoghuirfsonghuisfdhngth settings (click here to open)."
+  "deviceNotHereTip": "Can't see your device here? Try pairing it through your Bluetooth settings first (click here to open)."
 }

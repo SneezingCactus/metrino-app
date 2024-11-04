@@ -4,11 +4,6 @@ import 'dart:typed_data';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:metrinoapp/misc/odometer_device_info.dart';
 
-enum TurnDirection {
-  left,
-  right,
-}
-
 class DeviceCommManager {
   static DeviceCommManager instance = DeviceCommManager();
 
@@ -24,7 +19,8 @@ class DeviceCommManager {
       "9b04682b-7eb0-449b-bd79-419064a43463";
   static const String operationServiceUuid =
       '0331e722-6d35-4922-8c69-f80d0f9fb9e7';
-  static const String turnPulseChaUuid = '8fc09712-72c2-421e-865e-fd5436896cf2';
+  static const String measurementChaUuid =
+      '8fc09712-72c2-421e-865e-fd5436896cf2';
 
   BluetoothDevice? currentDevice;
   OdometerDeviceInfo currentDeviceInfo = OdometerDeviceInfo();
@@ -33,15 +29,28 @@ class DeviceCommManager {
   BluetoothCharacteristic? deviceNameCha;
   BluetoothCharacteristic? batteryAmountCha;
   BluetoothCharacteristic? wheelDiameterCha;
-  BluetoothCharacteristic? wheelDivisionsCha;
+  BluetoothCharacteristic? wheelSlotsCha;
   BluetoothService? operationService;
-  BluetoothCharacteristic? turnPulseCha;
+  BluetoothCharacteristic? measurementCha;
 
   Uint8List inputBuffer = Uint8List(1024);
   int inputBufferCursor = 0;
 
-  List<void Function(OdometerDeviceInfo info)> connectionListeners = [];
-  List<void Function(TurnDirection direction)> turnListeners = [];
+  bool intentionallyDisconnecting = false;
+
+  List<void Function(double incomingMeasurement)> turnListeners = [];
+
+  static int intFromBytes(List<int> value) {
+    ByteBuffer buffer = Uint8List.fromList(value.reversed.toList()).buffer;
+    ByteData byteData = ByteData.view(buffer);
+    return byteData.getInt32(0);
+  }
+
+  static double doubleFromBytes(List<int> value) {
+    ByteBuffer buffer = Uint8List.fromList(value.reversed.toList()).buffer;
+    ByteData byteData = ByteData.view(buffer);
+    return byteData.getFloat64(0);
+  }
 
   void init() async {
     if (await FlutterBluePlus.isSupported == false) {
@@ -51,7 +60,6 @@ class DeviceCommManager {
 
     var subscription =
         FlutterBluePlus.adapterState.listen((BluetoothAdapterState state) {
-      print(state);
       if (state == BluetoothAdapterState.on) {
         // usually start scanning, connecting, etc
       } else {
@@ -66,8 +74,13 @@ class DeviceCommManager {
     subscription.cancel();
   }
 
-  Future<bool> connect(BluetoothDevice device) async {
+  Future<bool> disconnect() async {
     await currentDevice?.disconnect();
+    return true;
+  }
+
+  Future<bool> connect(BluetoothDevice device) async {
+    await disconnect();
     await device.connect();
 
     currentDevice = device;
@@ -96,15 +109,15 @@ class DeviceCommManager {
           wheelDiameterCha = cha;
           break;
         case wheelDivisionsChaUuid:
-          wheelDivisionsCha = cha;
+          wheelSlotsCha = cha;
           break;
       }
     }
 
     for (BluetoothCharacteristic cha in operationService!.characteristics) {
       switch (cha.characteristicUuid.str) {
-        case turnPulseChaUuid:
-          turnPulseCha = cha;
+        case measurementChaUuid:
+          measurementCha = cha;
           break;
       }
     }
@@ -112,55 +125,28 @@ class DeviceCommManager {
     if (deviceNameCha == null) return false;
     if (batteryAmountCha == null) return false;
     if (wheelDiameterCha == null) return false;
-    if (wheelDivisionsCha == null) return false;
-    if (turnPulseCha == null) return false;
+    if (wheelSlotsCha == null) return false;
+    if (measurementCha == null) return false;
 
-    final turnPulseSubscription = turnPulseCha!.onValueReceived.listen((value) {
-      print(value);
-      for (void Function(TurnDirection) listener in turnListeners) {
-        listener(TurnDirection.values[value[0]]);
+    final turnPulseSubscription =
+        measurementCha!.onValueReceived.listen((value) {
+      double incomingMeasurement = doubleFromBytes(value);
+      for (void Function(double) listener in turnListeners) {
+        listener(incomingMeasurement);
       }
     });
 
     device.cancelWhenDisconnected(turnPulseSubscription);
 
-    await turnPulseCha!.setNotifyValue(true);
+    await measurementCha!.setNotifyValue(true);
 
-    currentDeviceInfo.name = (await deviceNameCha!.read()).toString();
-    // currentDeviceInfo.pulsesPerSpin = (await wheelDivisionsCha!.read());
-
-    /*
-    if (!connection.isConnected) return false;
-
-    currentConnection = connection;
-    connection.input?.listen(inputListener);
-    */
-
-    // connection.output.add(data)
+    currentDeviceInfo.name = String.fromCharCodes(await deviceNameCha!.read());
+    currentDeviceInfo.address = device.remoteId.str;
+    currentDeviceInfo.battery = doubleFromBytes(await batteryAmountCha!.read());
+    currentDeviceInfo.wheelDiameter =
+        doubleFromBytes(await wheelDiameterCha!.read());
+    currentDeviceInfo.wheelSlots = intFromBytes(await wheelSlotsCha!.read());
 
     return true;
-  }
-
-  void inputListener(Uint8List data) {
-    for (int byte in data) {
-      if (byte == 240) {
-        inputBufferCursor = 0;
-
-        switch (inputBuffer[0]) {
-          case 1:
-            for (var element in turnListeners) {
-              element(inputBuffer[1] == 1
-                  ? TurnDirection.right
-                  : TurnDirection.left);
-            }
-            break;
-        }
-
-        continue;
-      }
-
-      inputBuffer[inputBufferCursor] = byte;
-      inputBufferCursor++;
-    }
   }
 }

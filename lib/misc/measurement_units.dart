@@ -41,6 +41,10 @@ class MeasurementUnit {
     }
   }
 
+  static double convertMeasurement(double measurement, MeasurementUnit unit) {
+    return measurement / unit.meterRatio;
+  }
+
   static String stringifyMeasurement(double measurement, MeasurementUnit unit) {
     return '${(measurement / unit.meterRatio).toStringAsFixed(2)}${unit.symbol}';
   }

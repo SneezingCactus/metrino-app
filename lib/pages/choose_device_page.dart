@@ -1,3 +1,4 @@
+import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -18,7 +19,18 @@ class _ChooseDevicePageState extends State<ChooseDevicePage> {
   @override
   void initState() {
     super.initState();
+    asyncInit();
+  }
+
+  void asyncInit() async {
+    DeviceCommManager.instance.intentionallyDisconnecting = true;
+    await DeviceCommManager.instance.disconnect();
+    DeviceCommManager.instance.intentionallyDisconnecting = false;
     fetchDevices();
+  }
+
+  void openBluetoothSettings() {
+    AppSettings.openAppSettings(type: AppSettingsType.bluetooth);
   }
 
   void fetchDevices() async {
@@ -65,23 +77,25 @@ class _ChooseDevicePageState extends State<ChooseDevicePage> {
           title: Text(AppLocalizations.of(context)!.chooseDevicePage),
         ),
         body: Column(children: [
-          Card.filled(
-              child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Padding(
-                  padding: EdgeInsets.all(20),
-                  child: Icon(Icons.lightbulb_outline)),
-              Expanded(
-                  child: Padding(
-                      padding:
-                          const EdgeInsets.only(top: 20, bottom: 20, right: 20),
-                      child: Text(
-                        AppLocalizations.of(context)!.deviceNotHereTip,
-                        softWrap: true,
-                      ))),
-            ],
-          )),
+          InkWell(
+              onTap: openBluetoothSettings,
+              child: Card.filled(
+                  child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Padding(
+                      padding: EdgeInsets.all(20),
+                      child: Icon(Icons.lightbulb_outline)),
+                  Expanded(
+                      child: Padding(
+                          padding: const EdgeInsets.only(
+                              top: 20, bottom: 20, right: 20),
+                          child: Text(
+                            AppLocalizations.of(context)!.deviceNotHereTip,
+                            softWrap: true,
+                          ))),
+                ],
+              ))),
           Expanded(
               child: ListView.builder(
                   itemCount: bondedDevices.length,
@@ -89,10 +103,27 @@ class _ChooseDevicePageState extends State<ChooseDevicePage> {
                         leading: const Icon(Icons.bluetooth),
                         title: Text(bondedDevices[index].platformName),
                         subtitle: Text(bondedDevices[index].remoteId.str),
-                        onTap: () {
-                          DeviceCommManager.instance
+                        onTap: () async {
+                          showDialog(
+                              barrierDismissible: false,
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                    content: Row(
+                                  children: [
+                                    const CircularProgressIndicator(),
+                                    const Padding(
+                                        padding: EdgeInsets.only(left: 20)),
+                                    Text(AppLocalizations.of(context)!
+                                        .connecting)
+                                  ],
+                                ));
+                              });
+                          await DeviceCommManager.instance
                               .connect(bondedDevices[index]);
+                          Navigator.pop(context, 'Close dialog');
                           Navigator.pop(context, 'Device chosen');
+                          widget.onDeviceChosen(bondedDevices[index]);
                         },
                       )))
         ]));

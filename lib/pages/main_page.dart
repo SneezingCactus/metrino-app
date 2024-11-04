@@ -1,26 +1,21 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:metrinoapp/pages/choose_unit_dialog.dart';
 import 'package:metrinoapp/managers/device_comm_manager.dart';
 import 'package:metrinoapp/pages/device_management_page.dart';
 import 'package:metrinoapp/misc/measurement_units.dart';
-import 'package:metrinoapp/misc/odometer_device_info.dart';
 import 'package:metrinoapp/pages/saved_measurements_page.dart';
-import 'package:metrinoapp/pages/settings_page.dart';
 import 'package:metrinoapp/managers/storage_manager.dart';
 import 'package:metrinoapp/misc/wheel_widget.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class MainPage extends StatefulWidget {
+  const MainPage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<MainPage> createState() => _MainPageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _MainPageState extends State<MainPage> {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   MeasurementUnit _currentUnit = MeasurementUnit.all.values.first;
   double _currentMeasurement = 0;
@@ -29,29 +24,26 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
 
-    StorageManager.instance.init();
+    DeviceCommManager.instance.turnListeners.add(_turnListener);
+  }
 
-    DeviceCommManager.instance.init();
-    DeviceCommManager.instance.turnListeners.add((TurnDirection direction) {
-      setState(() {
-        OdometerDeviceInfo deviceInfo =
-            DeviceCommManager.instance.currentDeviceInfo;
-        double pulseLength =
-            pi * deviceInfo.wheelDiameter / deviceInfo.wheelDivisions;
+  @override
+  void dispose() {
+    super.dispose();
 
-        if (direction == TurnDirection.right) {
-          _currentMeasurement += pulseLength;
-        } else {
-          _currentMeasurement -= pulseLength;
-        }
-      });
+    DeviceCommManager.instance.turnListeners.remove(_turnListener);
+  }
+
+  void _turnListener(double incomingMeasurement) {
+    setState(() {
+      _currentMeasurement = incomingMeasurement;
     });
-
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
   }
 
   void _resetMeasurement() {
     setState(() {
+      DeviceCommManager.instance.measurementCha
+          ?.write([0, 0, 0, 0, 0, 0, 0, 0]);
       _currentMeasurement = 0;
     });
   }
@@ -72,21 +64,17 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _goToDeviceManagementPage() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (context) => DeviceManagementPage(
-                deviceInfo: DeviceCommManager.instance.currentDeviceInfo,
-              )),
-    );
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => const DeviceManagementPage()));
   }
 
+  /*
   void _goToSettingsPage() {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const SettingsPage()),
     );
-  }
+  }*/
 
   void _goToSavedMeasurementsPage() {
     Navigator.push(
@@ -116,11 +104,34 @@ class _HomePageState extends State<HomePage> {
 
     return Scaffold(
       key: scaffoldKey,
-      body: Center(
-        child: Row(
-          textDirection: TextDirection.rtl,
+      body: Stack(children: [
+        Row(
+          textDirection: TextDirection.ltr,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
+            Container(
+              padding: const EdgeInsets.all(30),
+              child: Column(
+                  textDirection: TextDirection.rtl,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    IconButton.filledTonal(
+                      onPressed: _goToDeviceManagementPage,
+                      tooltip:
+                          AppLocalizations.of(context)!.deviceManagementPage,
+                      icon: const Icon(Icons.bluetooth),
+                      padding: const EdgeInsets.all(10.0),
+                    ),
+                    /*
+                    IconButton.filledTonal(
+                      onPressed: _goToSettingsPage,
+                      tooltip: AppLocalizations.of(context)!.settings,
+                      icon: const Icon(Icons.settings),
+                      padding: const EdgeInsets.all(10.0),
+                    ),*/
+                  ]),
+            ),
             Container(
               padding: const EdgeInsets.all(40),
               child: Column(
@@ -151,64 +162,46 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ]),
             ),
-            CustomPaint(
-                painter: WheelWidget(
-                  borderThickness: 10,
-                  emptyZoneColor: theme.colorScheme.primaryContainer,
-                  filledZoneColor: theme.colorScheme.inversePrimary,
-                  progress: _currentMeasurement * 360,
-                ),
-                child: InkWell(
-                  onTap: _goToSavedMeasurementsPage,
-                  customBorder: const CircleBorder(),
-                  child: Container(
-                      padding: const EdgeInsets.all(25),
-                      width: 300,
-                      height: 300,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          FittedBox(
-                              fit: BoxFit.scaleDown,
-                              child: Text(
-                                MeasurementUnit.stringifyMeasurement(
-                                    _currentMeasurement, _currentUnit),
-                                style: theme.textTheme.displayLarge,
-                              )),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(AppLocalizations.of(context)!
-                                  .seeSavedMeasurements),
-                              const Icon(Icons.keyboard_arrow_down_rounded)
-                            ],
-                          )
-                        ],
-                      )),
-                )),
-            Container(
-              padding: const EdgeInsets.all(30),
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    IconButton(
-                      onPressed: _goToDeviceManagementPage,
-                      tooltip: 'Increment',
-                      icon: const Icon(Icons.bluetooth),
-                      padding: const EdgeInsets.all(20.0),
-                    ),
-                    IconButton(
-                      onPressed: _goToSettingsPage,
-                      tooltip: 'Increment',
-                      icon: const Icon(Icons.settings),
-                      padding: const EdgeInsets.all(20.0),
-                    ),
-                  ]),
-            ),
           ],
         ),
-      ),
+        Center(
+          child: CustomPaint(
+              painter: WheelWidget(
+                borderThickness: 10,
+                emptyZoneColor: theme.colorScheme.primaryContainer,
+                filledZoneColor: theme.colorScheme.inversePrimary,
+                progress: _currentMeasurement * 360,
+              ),
+              child: InkWell(
+                onTap: _goToSavedMeasurementsPage,
+                customBorder: const CircleBorder(),
+                child: Container(
+                    padding: const EdgeInsets.all(25),
+                    width: 300,
+                    height: 300,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              MeasurementUnit.stringifyMeasurement(
+                                  _currentMeasurement, _currentUnit),
+                              style: theme.textTheme.displayLarge,
+                            )),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(AppLocalizations.of(context)!
+                                .seeSavedMeasurements),
+                            const Icon(Icons.keyboard_arrow_down_rounded)
+                          ],
+                        )
+                      ],
+                    )),
+              )),
+        ),
+      ]),
     );
   }
 }

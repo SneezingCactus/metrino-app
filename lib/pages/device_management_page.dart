@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:metrinoapp/managers/device_comm_manager.dart';
 import 'package:metrinoapp/pages/choose_device_page.dart';
-import 'package:metrinoapp/misc/odometer_device_info.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class DeviceManagementPage extends StatefulWidget {
-  const DeviceManagementPage({super.key, required this.deviceInfo});
-
-  final OdometerDeviceInfo deviceInfo;
+  const DeviceManagementPage({super.key});
 
   @override
   State<DeviceManagementPage> createState() => _DeviceManagementPageState();
@@ -20,7 +17,9 @@ class _DeviceManagementPageState extends State<DeviceManagementPage> {
       context,
       MaterialPageRoute(
           builder: (context) => ChooseDevicePage(
-                onDeviceChosen: (BluetoothDevice device) {},
+                onDeviceChosen: (BluetoothDevice device) {
+                  setState(() {});
+                },
               )),
     );
   }
@@ -33,28 +32,62 @@ class _DeviceManagementPageState extends State<DeviceManagementPage> {
       ),
       body: ListView(
         children: [
-          ListTile(
-            leading: const Icon(Icons.abc),
-            title: Text(AppLocalizations.of(context)!.deviceName),
-            subtitle: Text(widget.deviceInfo.name),
+          Row(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Image.asset(
+                "assets/device_renders/metrino_v1.png",
+                width: MediaQuery.of(context).size.width / 2,
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(AppLocalizations.of(context)!.connectedTo,
+                      style: const TextStyle(fontSize: 12)),
+                  Text(DeviceCommManager.instance.currentDeviceInfo.name,
+                      style: const TextStyle(
+                          fontSize: 32, fontWeight: FontWeight.bold)),
+                  Row(
+                    children: [
+                      const Icon(Icons.bluetooth),
+                      Text(
+                          ' ${AppLocalizations.of(context)!.deviceAddress}: ${DeviceCommManager.instance.currentDeviceInfo.address}',
+                          style: const TextStyle(fontSize: 18)),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      const Icon(Icons.battery_full),
+                      Text(
+                          ' ${AppLocalizations.of(context)!.deviceBattery}: ${DeviceCommManager.instance.currentDeviceInfo.battery.toStringAsFixed(2)}V',
+                          style: const TextStyle(fontSize: 18)),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      const Icon(Icons.motion_photos_off_outlined),
+                      Text(
+                          ' ${AppLocalizations.of(context)!.deviceWheelDiameter}: ${DeviceCommManager.instance.currentDeviceInfo.wheelDiameter}m',
+                          style: const TextStyle(fontSize: 18)),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      const Icon(Icons.downloading_outlined),
+                      Text(
+                          ' ${AppLocalizations.of(context)!.deviceWheelSlots}: ${DeviceCommManager.instance.currentDeviceInfo.wheelSlots}',
+                          style: const TextStyle(fontSize: 18)),
+                    ],
+                  ),
+                ],
+              )
+            ],
           ),
           const Divider(),
           ListTile(
-            leading: const Icon(Icons.bluetooth),
-            title: Text(AppLocalizations.of(context)!.deviceAddress),
-            subtitle: Text(widget.deviceInfo.address),
-          ),
-          const Divider(),
-          ListTile(
-            leading: const Icon(Icons.battery_full),
-            title: Text(AppLocalizations.of(context)!.deviceBattery),
-            subtitle: Text("${widget.deviceInfo.battery.toString()}%"),
-          ),
-          const Divider(),
-          ListTile(
-            leading: const Icon(Icons.motion_photos_off_outlined),
-            title: Text(AppLocalizations.of(context)!.deviceWheelDiameter),
-            subtitle: Text("${widget.deviceInfo.battery.toString()}m"),
+            leading: const Icon(Icons.tune_outlined),
+            title: Text(AppLocalizations.of(context)!.modifyDeviceParameters),
+            subtitle: Text(AppLocalizations.of(context)!.advancedUsersOnly),
           ),
         ],
       ),
