@@ -7,9 +7,14 @@ import 'package:metrinoapp/managers/storage_manager.dart';
 import 'package:metrinoapp/pages/choose_device_page.dart';
 import 'package:metrinoapp/pages/main_page.dart';
 
-class WelcomePage extends StatelessWidget {
+class WelcomePage extends StatefulWidget {
   const WelcomePage({super.key});
 
+  @override
+  State<WelcomePage> createState() => _WelcomePageState();
+}
+
+class _WelcomePageState extends State<WelcomePage> {
   void _goToMainPage(BuildContext context) {
     Navigator.push(
         context, MaterialPageRoute(builder: (context) => const MainPage()));
@@ -28,11 +33,15 @@ class WelcomePage extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    super.initState();
+
     StorageManager.instance.init();
     DeviceCommManager.instance.init();
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+  }
 
+  @override
+  Widget build(BuildContext context) {
     FlutterBluePlus.events.onConnectionStateChanged.listen((event) {
       if (event.connectionState == BluetoothConnectionState.disconnected &&
           !DeviceCommManager.instance.intentionallyDisconnecting) {

@@ -25,7 +25,7 @@ class DeviceCommManager {
   BluetoothDevice? currentDevice;
   OdometerDeviceInfo currentDeviceInfo = OdometerDeviceInfo();
 
-  BluetoothService? configurationService;
+  BluetoothService? paramService;
   BluetoothCharacteristic? deviceNameCha;
   BluetoothCharacteristic? batteryAmountCha;
   BluetoothCharacteristic? wheelDiameterCha;
@@ -68,7 +68,7 @@ class DeviceCommManager {
     });
 
     if (Platform.isAndroid) {
-      await FlutterBluePlus.turnOn();
+      await FlutterBluePlus.turnOn(timeout: 600);
     }
 
     subscription.cancel();
@@ -89,7 +89,7 @@ class DeviceCommManager {
     for (BluetoothService service in services) {
       switch (service.serviceUuid.str) {
         case configurationServiceUuid:
-          configurationService = service;
+          paramService = service;
           break;
         case operationServiceUuid:
           operationService = service;
@@ -97,7 +97,7 @@ class DeviceCommManager {
       }
     }
 
-    for (BluetoothCharacteristic cha in configurationService!.characteristics) {
+    for (BluetoothCharacteristic cha in paramService!.characteristics) {
       switch (cha.characteristicUuid.str) {
         case deviceNameChaUuid:
           deviceNameCha = cha;
