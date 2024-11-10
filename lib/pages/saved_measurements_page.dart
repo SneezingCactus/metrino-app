@@ -3,6 +3,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:metrinoapp/misc/measurement_units.dart';
 import 'package:metrinoapp/managers/storage_manager.dart';
 import 'package:flutter/services.dart';
+import 'package:metrinoapp/pages/choose_unit_dialog.dart';
 
 class SavedMeasurementsPage extends StatefulWidget {
   const SavedMeasurementsPage({super.key});
@@ -46,9 +47,15 @@ class _SavedMeasurementsPageState extends State<SavedMeasurementsPage> {
             ? []
             : [
                 IconButton(
-                    onPressed: () {}, icon: const Icon(Icons.delete_outlined)),
-                IconButton(
-                    onPressed: () {}, icon: const Icon(Icons.copy_outlined)),
+                    onPressed: () async {
+                      for (int index in selectedItems) {
+                        await StorageManager.instance.deleteMeasurement(
+                            savedMeasurements[index].timestamp);
+                      }
+                      selectedItems.clear();
+                      fetchSavedMeasurements();
+                    },
+                    icon: const Icon(Icons.delete_outlined)),
               ],
       ),
       body: ListView.builder(
@@ -79,12 +86,32 @@ class _SavedMeasurementsPageState extends State<SavedMeasurementsPage> {
                         child: const Text('Copy to clipboard'),
                       ),
                       MenuItemButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return ChooseUnitDialog(
+                                  initialValue: measurement.unit,
+                                  onChanged: (newUnit) {
+                                    setState(() {
+                                      StorageManager.instance
+                                          .changeMeasurementUnit(
+                                              measurement.timestamp, newUnit);
+                                      fetchSavedMeasurements();
+                                    });
+                                  },
+                                );
+                              });
+                        },
                         leadingIcon: const Icon(Icons.straighten),
                         child: const Text('Change unit'),
                       ),
                       MenuItemButton(
-                        onPressed: () {},
+                        onPressed: () async {
+                          await StorageManager.instance
+                              .deleteMeasurement(measurement.timestamp);
+                          fetchSavedMeasurements();
+                        },
                         leadingIcon: const Icon(Icons.delete_outlined),
                         child: const Text('Delete'),
                       ),

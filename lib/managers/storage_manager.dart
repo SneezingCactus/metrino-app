@@ -55,6 +55,17 @@ class StorageManager {
     );
   }
 
+  Future<void> deleteMeasurement(int timestamp) async {
+    await database!.delete('savedMeasurements',
+        where: 'timestamp = ?', whereArgs: [timestamp]);
+  }
+
+  Future<void> changeMeasurementUnit(
+      int timestamp, MeasurementUnit unit) async {
+    await database!.update('savedMeasurements', {'unit': unit.symbol},
+        where: 'timestamp = ?', whereArgs: [timestamp]);
+  }
+
   Future<List<SavedMeasurement>> getSavedMeasurements() async {
     final List<Map<String, Object?>> maps =
         await database!.query('savedMeasurements', orderBy: 'timestamp DESC');
@@ -71,10 +82,5 @@ class StorageManager {
             unit:
                 MeasurementUnit.all[unit] ?? MeasurementUnit.all.values.first),
     ];
-  }
-
-  Future<void> deleteSavedMeasurement(int id) async {
-    await database!
-        .delete('savedMeasurements', where: 'id = ?', whereArgs: [id]);
   }
 }
