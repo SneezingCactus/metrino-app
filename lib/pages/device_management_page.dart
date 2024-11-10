@@ -3,6 +3,7 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:metrinoapp/managers/device_comm_manager.dart';
 import 'package:metrinoapp/pages/choose_device_page.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:metrinoapp/pages/device_config_page.dart';
 
 class DeviceManagementPage extends StatefulWidget {
   const DeviceManagementPage({super.key});
@@ -22,6 +23,11 @@ class _DeviceManagementPageState extends State<DeviceManagementPage> {
                 },
               )),
     );
+  }
+
+  void _goToDeviceConfigPage() {
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => const DeviceConfigPage()));
   }
 
   @override
@@ -88,6 +94,7 @@ class _DeviceManagementPageState extends State<DeviceManagementPage> {
             leading: const Icon(Icons.tune_outlined),
             title: Text(AppLocalizations.of(context)!.modifyDeviceParameters),
             subtitle: Text(AppLocalizations.of(context)!.advancedUsersOnly),
+            onTap: _goToDeviceConfigPage,
           ),
         ],
       ),

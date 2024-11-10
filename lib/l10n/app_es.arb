@@ -5,6 +5,7 @@
 
   "okDialogButton": "Aceptar",
   "cancelDialogButton": "Cancelar",
+  "applyDialogButton": "Aplicar",
 
   "unitKilometers": "Kilómetros",
   "unitMeters": "Metros",
@@ -47,6 +48,11 @@
   "deviceWheelSlots": "Núm. de ranuras en la rueda",
   "modifyDeviceParameters": "Reconfigurar el dispositivo",
   "advancedUsersOnly": "Sólo para usuarios avanzados",
+  "advancedUsersOnlyWarning": "Una configuración errónea de estos parámetros puede tener un impacto considerable en la precisión de la medición. Sólo cambie estos parámetros si sabe lo que está haciendo.",
+  "changesApplied": "Cambios aplicados con éxito",
+  "changesAppliedNote": "La nueva configuración tomará efecto luego de reiniciar el dispositivo.",
+  "restartNow": "Reiniciar ahora",
+  "notYet": "Más tarde",
 
   "deviceNotHereTip": "No puedes ver a tu dispositivo en la lista? Intenta conectarte al mismo mediante la configuración de Bluetooth de tu teléfono (haz clic aquí para abrir), y refresca la lista."
 }

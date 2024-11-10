@@ -4,4 +4,13 @@ class OdometerDeviceInfo {
   double battery = 0;
   double wheelDiameter = 0.1;
   int wheelSlots = 20;
+
+  OdometerDeviceInfo clone() {
+    return OdometerDeviceInfo()
+      ..name = name
+      ..address = address
+      ..battery = battery
+      ..wheelDiameter = wheelDiameter
+      ..wheelSlots = wheelSlots;
+  }
 }

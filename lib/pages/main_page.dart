@@ -170,7 +170,10 @@ class _MainPageState extends State<MainPage> {
                 borderThickness: 10,
                 emptyZoneColor: theme.colorScheme.primaryContainer,
                 filledZoneColor: theme.colorScheme.inversePrimary,
-                progress: _currentMeasurement * 360,
+                progress: MeasurementUnit.convertMeasurement(
+                        _currentMeasurement,
+                        MeasurementUnit.nextUnit[_currentUnit.symbol]!) *
+                    360,
               ),
               child: InkWell(
                 onTap: _goToSavedMeasurementsPage,

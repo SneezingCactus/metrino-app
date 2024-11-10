@@ -20,6 +20,16 @@ class MeasurementUnit {
     'mi': MeasurementUnit(symbol: 'mi', meterRatio: 1609.344),
   };
 
+  static Map<String, MeasurementUnit> nextUnit = {
+    'm': all['km']!,
+    'cm': all['m']!,
+    'km': all['km']!,
+    'in': all['ft']!,
+    'ft': all['yd']!,
+    'yd': all['mi']!,
+    'mi': all['mi']!,
+  };
+
   static String getUnitFullName(BuildContext context, MeasurementUnit unit) {
     switch (unit.symbol) {
       case 'm':
@@ -46,6 +56,6 @@ class MeasurementUnit {
   }
 
   static String stringifyMeasurement(double measurement, MeasurementUnit unit) {
-    return '${(measurement / unit.meterRatio).toStringAsFixed(2)}${unit.symbol}';
+    return '${(convertMeasurement(measurement, unit)).toStringAsFixed(2)}${unit.symbol}';
   }
 }

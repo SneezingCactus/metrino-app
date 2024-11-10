@@ -1,8 +1,16 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:metrinoapp/misc/odometer_device_info.dart';
+
+enum DeviceActions {
+  idle,
+  restart,
+  applyParams,
+}
 
 class DeviceCommManager {
   static DeviceCommManager instance = DeviceCommManager();
@@ -15,12 +23,13 @@ class DeviceCommManager {
       "0efa935a-9627-4f0b-9e8f-1b86084d2477";
   static const String wheelDiameterChaUuid =
       "63a4b587-33e2-49ba-9c8b-cf0ed8989bae";
-  static const String wheelDivisionsChaUuid =
+  static const String wheelSlotsChaUuid =
       "9b04682b-7eb0-449b-bd79-419064a43463";
   static const String operationServiceUuid =
       '0331e722-6d35-4922-8c69-f80d0f9fb9e7';
   static const String measurementChaUuid =
       '8fc09712-72c2-421e-865e-fd5436896cf2';
+  static const String actionChaUuid = '58a0d3a8-2987-4a42-b452-3d43b088c157';
 
   BluetoothDevice? currentDevice;
   OdometerDeviceInfo currentDeviceInfo = OdometerDeviceInfo();
@@ -32,6 +41,7 @@ class DeviceCommManager {
   BluetoothCharacteristic? wheelSlotsCha;
   BluetoothService? operationService;
   BluetoothCharacteristic? measurementCha;
+  BluetoothCharacteristic? actionCha;
 
   Uint8List inputBuffer = Uint8List(1024);
   int inputBufferCursor = 0;
@@ -52,6 +62,18 @@ class DeviceCommManager {
     return byteData.getFloat64(0);
   }
 
+  static List<int> bytesFromInt(int value) {
+    ByteData byteData = ByteData(4);
+    byteData.setInt32(0, value);
+    return byteData.buffer.asInt8List().reversed.toList();
+  }
+
+  static List<int> bytesFromDouble(double value) {
+    ByteData byteData = ByteData(8);
+    byteData.setFloat64(0, value);
+    return byteData.buffer.asInt8List().reversed.toList();
+  }
+
   void init() async {
     if (await FlutterBluePlus.isSupported == false) {
       print("Bluetooth not supported by this device");
@@ -68,10 +90,32 @@ class DeviceCommManager {
     });
 
     if (Platform.isAndroid) {
-      await FlutterBluePlus.turnOn(timeout: 600);
+      await FlutterBluePlus.turnOn(timeout: 9999999);
     }
 
     subscription.cancel();
+  }
+
+  Future<void> writeDeviceName(String newValue) async {
+    await deviceNameCha?.write(const AsciiEncoder().convert(newValue));
+  }
+
+  Future<void> writeWheelDiameter(double newValue) async {
+    await wheelDiameterCha?.write(bytesFromDouble(newValue));
+  }
+
+  Future<void> writeWheelSlots(int newValue) async {
+    await wheelSlotsCha?.write(bytesFromInt(newValue));
+  }
+
+  Future<void> applyParams() async {
+    await actionCha?.write([DeviceActions.applyParams.index]);
+  }
+
+  Future<void> restart() async {
+    await actionCha
+        ?.write([DeviceActions.restart.index], withoutResponse: true);
+    currentDevice?.disconnect();
   }
 
   Future<bool> disconnect() async {
@@ -108,7 +152,7 @@ class DeviceCommManager {
         case wheelDiameterChaUuid:
           wheelDiameterCha = cha;
           break;
-        case wheelDivisionsChaUuid:
+        case wheelSlotsChaUuid:
           wheelSlotsCha = cha;
           break;
       }
@@ -119,6 +163,9 @@ class DeviceCommManager {
         case measurementChaUuid:
           measurementCha = cha;
           break;
+        case actionChaUuid:
+          actionCha = cha;
+          break;
       }
     }
 
@@ -127,6 +174,7 @@ class DeviceCommManager {
     if (wheelDiameterCha == null) return false;
     if (wheelSlotsCha == null) return false;
     if (measurementCha == null) return false;
+    if (actionCha == null) return false;
 
     final turnPulseSubscription =
         measurementCha!.onValueReceived.listen((value) {

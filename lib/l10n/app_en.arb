@@ -10,6 +10,10 @@
   "@okDialogButton": {
     "description": "Label for 'OK' dialog buttons"
   },
+  "applyDialogButton": "Apply",
+  "@applyDialogButton": {
+    "description": "Label for 'Apply' dialog buttons"
+  },
   "cancelDialogButton": "Cancel",
   "@cancelDialogButton": {
     "description": "Label for 'Cancel' dialog buttons"
@@ -100,6 +104,11 @@
   "deviceWheelSlots": "Wheel slots",
   "modifyDeviceParameters": "Modify device parameters",
   "advancedUsersOnly": "Advanced users only",
+  "advancedUsersOnlyWarning": "Misconfiguring your device can heavily impact its precision. Only proceed if you know what you're doing.",
+  "changesApplied": "Changes applied successfully",
+  "changesAppliedNote": "The new parameters will take effect after restarting the device. Do you wish to restart now?",
+  "restartNow": "Restart now",
+  "notYet": "Not yet",
 
   "deviceNotHereTip": "Can't see your device here? Try pairing it through your Bluetooth settings first (click here to open)."
 }
